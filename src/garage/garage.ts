@@ -4,15 +4,25 @@ import { generateCarObject, generateColor, carImage } from '../utils';
 
 export class Garage {
   currentCar: Car[];
+
   pageNum: number;
+
   limit: number;
+
   totalCars: string;
+
   numberGenerate: number;
+
   inputName: string;
+
   inputColor: string;
+
   inputNameUpd: string;
+
   inputColorUpd: string;
-  carForUpdate: Car
+
+  carForUpdate: Car;
+
   constructor() {
     this.currentCar = [];
     this.pageNum = 1;
@@ -26,33 +36,40 @@ export class Garage {
     this.carForUpdate = { name: '', color: '', id: -1 };
   }
 
-  addCar = async (data: { name: string; color: string }) => {
-    const response: Response = await fetch(`${BASE_URL}${ADD_PATH.garage}`, {
-      method: 'POST',
-      body: JSON.stringify(data), // данные могут быть 'строкой' или {объектом}!
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    });
-    // console.log(response.status);
-    // console.log(await response.json());
-  }
+  static addCar = async (data: { name: string; color: string }) => {
+    try {
+      // const response: Response =
+      await fetch(`${BASE_URL}${ADD_PATH.garage}`, {
+        method: 'POST',
+        body: JSON.stringify(data), // данные могут быть 'строкой' или {объектом}!
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      // console.log(response.status);
+      // console.log(await response.json());
+    } catch (err) {
+      // перехватит любую ошибку в блоке try: и в fetch, и в response.json
+      console.log((err as Error).message);
+      // return {};
+    }
+  };
 
-  updateCar = async (data: { name: string; color: string }, id: number) => {
+  static updateCar = async (data: { name: string; color: string }, id: number) => {
     const response: Response = await fetch(`${BASE_URL}${ADD_PATH.garage}/${id}`, {
       method: 'PUT',
       body: JSON.stringify(data), // данные могут быть 'строкой' или {объектом}!
       headers: {
-        'Content-Type': 'application/json'
-      }
+        'Content-Type': 'application/json',
+      },
     });
     console.log(response.status);
     console.log(await response.json());
-  }
+  };
 
   genCar() {
-    for (let i = 0; i < this.numberGenerate; i++) {
-      this.addCar({ name: generateCarObject(), color: generateColor() });
+    for (let i = 0; i < this.numberGenerate; i += 1) {
+      Garage.addCar({ name: generateCarObject(), color: generateColor() });
     }
   }
 
@@ -62,23 +79,23 @@ export class Garage {
       // console.log(response.status);
       this.totalCars = response.headers.get('X-Total-Count') as string;
       this.currentCar = await response.json();
-      //return {items: data, totalCount: totalCount};
+      // return {items: data, totalCount: totalCount};
     } catch (err) {
       // перехватит любую ошибку в блоке try: и в fetch, и в response.json
       console.log((err as Error).message);
-      //return {};
+      // return {};
     }
   };
 
   private carItemClick = (e: Event) => {
     let target = e.target as Element;
-    //console.log(target);
+    // console.log(target);
     target = target.parentNode as Element;
-    //console.log(target);
-    while (!target.classList.contains("car-garage-item")) {
+    // console.log(target);
+    while (!target.classList.contains('car-garage-item')) {
       target = target.parentNode as Element;
     }
-    //console.log(target);
+    // console.log(target);
     const idCar = +(target.getAttribute('data-id') as string);
     this.carForUpdate = this.currentCar[idCar - 1];
     const carUpdName = document.querySelector('.car-update') as HTMLInputElement;
@@ -102,7 +119,7 @@ export class Garage {
         `<div class="car-garage-item" data-id="${this.currentCar[i].id}">
           <p>${this.currentCar[i].name}</p>
           <div>${carImage(this.currentCar[i].color)}</div>
-        </div>`
+        </div>`,
       );
     }
     const carItems = document.querySelectorAll('.cars-garage');
@@ -141,7 +158,7 @@ export class Garage {
           <button class="reset">Reset</button>
           <button class="generate-cars">Generate ${this.numberGenerate} Cars</button>
         </div>  
-      </div>`
+      </div>`,
     );
     const carName = document.querySelector('.car-add') as HTMLInputElement;
     carName.value = this.inputName;
@@ -161,7 +178,7 @@ export class Garage {
     const add = document.querySelector('.add') as Element;
     add.addEventListener('click', () => {
       if (carName.value) {
-        this.addCar({ name: carName.value, color: carColor.value });
+        Garage.addCar({ name: carName.value, color: carColor.value });
         this.drawGarage();
       }
       this.inputColor = '';
@@ -186,7 +203,8 @@ export class Garage {
     const update = document.querySelector('.update') as Element;
     update.addEventListener('click', () => {
       if (this.carForUpdate.name) {
-        this.updateCar({ name: carUpdName.value, color: carUpdColor.value }, this.carForUpdate.id);
+        Garage.updateCar({ name: carUpdName.value, color: carUpdColor.value },
+          this.carForUpdate.id);
         this.drawGarage();
       }
       this.inputColorUpd = '#FFFFFF';
@@ -207,7 +225,7 @@ export class Garage {
         <button class="prev-garage">Prev</button>
         <button class="next-garage">Next</button>
        </div> 
-        `
+        `,
     );
     const prevBtn = document.querySelector('.prev-garage') as Element;
     const nextBtn = document.querySelector('.next-garage') as Element;
@@ -234,7 +252,7 @@ export class Garage {
     garageMain.innerHTML = '';
     garageMain.insertAdjacentHTML(
       'beforeend',
-      `<div class="cars-garage"></div>`
+      '<div class="cars-garage"></div>',
     );
 
     await this.drawCars(garageMain);
@@ -244,7 +262,7 @@ export class Garage {
     const prevBtn = document.querySelector('.prev-garage') as Element;
     const nextBtn = document.querySelector('.next-garage') as Element;
     this.checkDisableBtn(prevBtn, nextBtn);
-  }
+  };
 
   renderCarage() {
     this.drawGarage();

@@ -1,7 +1,7 @@
 export const clearMainSection = () => {
   const mainSection = document.querySelector('main') as Element;
   mainSection.innerHTML = '';
-}
+};
 
 export const generateCarObject = () => {
   const carCompany = ['Tesla', 'BMW', 'Mercedes', 'Lada', 'Kia', 'Nissan', 'Scoda', 'Honda', 'Ford', 'Volkswagen'];
@@ -14,7 +14,7 @@ export const generateCarObject = () => {
 export const generateColor = () => {
   const symbols = '0123456789ABCDEF';
   let color = '#';
-  for (let i = 0; i < 6; i++) {
+  for (let i = 0; i < 6; i += 1) {
     color += symbols[Math.floor(Math.random() * symbols.length)];
   }
   return color;

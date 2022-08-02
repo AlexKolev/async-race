@@ -4,9 +4,13 @@ import { clearMainSection } from '../utils';
 
 export class Winners {
   carsWinners: CarsWinner[];
+
   pageNum: number;
+
   limit: number;
+
   totalCars: string;
+
   constructor() {
     this.carsWinners = [];
     this.pageNum = 1;
@@ -20,11 +24,11 @@ export class Winners {
       console.log(response.status);
       this.totalCars = response.headers.get('X-Total-Count') as string;
       this.carsWinners = await response.json();
-      //return data;
+      // return data;
     } catch (err) {
       // перехватит любую ошибку в блоке try: и в fetch, и в response.json
       console.log((err as Error).message);
-      //return {};
+      // return {};
     }
   };
 
@@ -35,7 +39,6 @@ export class Winners {
   };
 
   drawWinners() {
-
     clearMainSection();
     this.drawCarsWinners();
   }
