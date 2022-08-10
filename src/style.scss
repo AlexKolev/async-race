@@ -2,17 +2,16 @@ body {
   background-color: darkslategrey;
 }
 
+.header {
+  margin: 5px;
+}
 
 .car-garage-item,
 h4,
 h3,
 p {
-  margin: 8px 0;
+  margin: 6px 0;
 }
-
-// .cars-garage {
-//   height: 270px;
-// }
 
 .garage-header-section {
   margin: 5px;
@@ -42,4 +41,46 @@ p {
 .car-update-color,
 .reset {
   margin: 0 5px;
+}
+
+.car-header {
+  margin-bottom: 9px;
+}
+
+.car-name {
+  display: inline;
+}
+
+.car-race {
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+  border-bottom: dashed white;
+}
+
+@keyframes move-car {
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(90vw);
+  }
+}
+
+.car-svg {
+  position: relative;
+  top: 10px;
+}
+
+.car-svg:hover {
+  animation: move-car 4s linear;
+}
+
+.car-flag {
+  position: absolute;
+  top: 5px;
+  left: 90vw;
+  color: red;
+  font-size: 30px;
 }
