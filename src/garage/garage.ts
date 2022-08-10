@@ -87,17 +87,51 @@ export class Garage {
     }
   };
 
+  delCars = async (id: number) => {
+    try {
+      const response: Response = await fetch(`${BASE_URL}${ADD_PATH.garage}/${id}`, { method: 'DELETE' });
+      console.log(response.status);
+      console.log(await response.json());
+      // return {items: data, totalCount: totalCount};
+    } catch (err) {
+      // перехватит любую ошибку в блоке try: и в fetch, и в response.json
+      console.log((err as Error).message);
+      // return {};
+    }
+  };
+
+  startEngine = async (id: number) => {
+    try {
+      const response: Response = await fetch(`${BASE_URL}${ADD_PATH.engine}?id=${id}&status=started`, { method: 'PATCH' });
+      return await response.json();
+    } catch (err) {
+      // перехватит любую ошибку в блоке try: и в fetch, и в response.json
+      console.log((err as Error).message);
+      // return {};
+    }
+  };
+
+  driveMode = async (id: number) => {
+    try {
+      const response: Response = await fetch(`${BASE_URL}${ADD_PATH.engine}?id=${id}&status=drive`, { method: 'PATCH' });
+      return response.status;
+    } catch (err) {
+      // перехватит любую ошибку в блоке try: и в fetch, и в response.json
+      console.log((err as Error).message);
+      // return {};
+    }
+  };
+
   private carItemClick = (e: Event) => {
     let target = e.target as Element;
-    // console.log(target);
-    target = target.parentNode as Element;
-    // console.log(target);
-    while (!target.classList.contains('car-garage-item')) {
-      target = target.parentNode as Element;
-    }
-    // console.log(target);
+    // target = target.parentNode as Element;
+    // while (!target.classList.contains('car-garage-item')) {
+    //   target = target.parentNode as Element;
+    // }
     const idCar = +(target.getAttribute('data-id') as string);
-    this.carForUpdate = this.currentCar[idCar - 1];
+    if (this.currentCar.find((el) => (el.id === idCar))) {
+      this.carForUpdate = this.currentCar.find((el) => (el.id === idCar)) as Car;
+    }
     const carUpdName = document.querySelector('.car-update') as HTMLInputElement;
     const carUpdColor = document.querySelector('.car-update-color') as HTMLInputElement;
     carUpdName.value = this.carForUpdate.name;
@@ -105,9 +139,38 @@ export class Garage {
 
     this.inputNameUpd = carUpdName.value;
     this.inputColorUpd = carUpdColor.value;
-
-    // this.updateCar(this.currentCar[idCar - 1], idCar);
   };
+
+  private carItemDelClick = async (e: Event) => {
+    let target = e.target as Element;
+    // target = target.parentNode as Element;
+    // while (!target.classList.contains('car-garage-item')) {
+    //   target = target.parentNode as Element;
+    // }
+    const idCar = +(target.getAttribute('data-id') as string);
+    await this.delCars(idCar);
+    const totalcars = document.querySelector('.totalcars-garage') as Element;
+    this.totalCars = `${+this.totalCars - 1}`;
+    totalcars.innerHTML = `Cars in Garage ${this.totalCars}`;
+    this.drawCars(document.querySelector('main') as Element);
+  };
+
+  private carStartClick = async (e: Event) => {
+    const target = e.target as Element;
+    const idCar = +(target.getAttribute('data-id') as string);
+    const { velocity, distance } = await this.startEngine(idCar);
+    console.log({ velocity, distance });
+    console.log(distance / velocity);
+
+    const elemC = document.querySelector(`.car-flag[data-id="${idCar}"]`) as Element;
+    console.log(elemC.getBoundingClientRect());
+
+    const elemF = document.querySelector(`.wraper-car-svg[data-id="${idCar}"]`) as Element;
+    console.log(elemF.getBoundingClientRect());
+
+    const status = await this.driveMode(idCar);
+    console.log(status);
+  }
 
   drawCars = async (garageMain: Element) => {
     await this.getCars(this.pageNum, this.limit);
@@ -117,14 +180,33 @@ export class Garage {
       carsGarage.insertAdjacentHTML(
         'beforeend',
         `<div class="car-garage-item" data-id="${this.currentCar[i].id}">
-          <p>${this.currentCar[i].name}</p>
-          <div>${carImage(this.currentCar[i].color)}</div>
+          <div class = "car-header">
+            <button class="select-car" data-id="${this.currentCar[i].id}">Select</button>
+            <button class="remove-car" data-id="${this.currentCar[i].id}">Remove</button>
+            <p class="car-name">${this.currentCar[i].name}</p>
+            <button class = "engine-start" data-id="${this.currentCar[i].id}">Start</button>
+            <button class = "engine-stop" data-id="${this.currentCar[i].id}">Stop</button>
+          </div>
+          <div class = "car-race">
+            <div class="wraper-car-svg" data-id="${this.currentCar[i].id}">${carImage(this.currentCar[i].color)}</div>
+            <div class = "car-flag" data-id="${this.currentCar[i].id}">⚑</div>
+          </div>
         </div>`,
       );
     }
-    const carItems = document.querySelectorAll('.cars-garage');
+    const carItems = document.querySelectorAll('.select-car');
     carItems.forEach((carItem) => {
       carItem.addEventListener('click', this.carItemClick);
+    });
+
+    const carItemsDel = document.querySelectorAll('.remove-car');
+    carItemsDel.forEach((carItem) => {
+      carItem.addEventListener('click', this.carItemDelClick);
+    });
+
+    const carStart = document.querySelectorAll('.engine-start');
+    carStart.forEach((carStart) => {
+      carStart.addEventListener('click', this.carStartClick);
     });
   };
 
@@ -144,9 +226,7 @@ export class Garage {
   private addGarageHeader(garageMain: Element) {
     garageMain.insertAdjacentHTML(
       'afterbegin',
-      `<h3 class="totalcars-garage">Cars in Garage ${this.totalCars}</h3>
-      <h4 class="page-num-garage">Page ${this.pageNum}</h4>
-      <div class = "garage-header">
+      `<div class = "garage-header">
         <div class = "garage-header-section">
           <input type="text" autocomplete="on" class="car-add"><input type="color" class="car-add-color" value="#FFFFFF"> <button class="add">Create</button>
         </div>  
@@ -158,6 +238,8 @@ export class Garage {
           <button class="reset">Reset</button>
           <button class="generate-cars">Generate ${this.numberGenerate} Cars</button>
         </div>  
+      <h3 class="totalcars-garage">Cars in Garage ${this.totalCars}</h3>
+      <h4 class="page-num-garage">Page ${this.pageNum}</h4>
       </div>`,
     );
     const carName = document.querySelector('.car-add') as HTMLInputElement;

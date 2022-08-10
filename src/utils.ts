@@ -4,8 +4,8 @@ export const clearMainSection = () => {
 };
 
 export const generateCarObject = () => {
-  const carCompany = ['Tesla', 'BMW', 'Mercedes', 'Lada', 'Kia', 'Nissan', 'Scoda', 'Honda', 'Ford', 'Volkswagen'];
-  const carMogel = ['Model X', 'X5', 'AMG200', 'Kalina', 'Rio', 'Luke', 'Octavia', 'Fit', 'Mustang'];
+  const carCompany = ['Tesla', 'BMW', 'Mercedes', 'Lada', 'Kia', 'Nissan', 'Scoda', 'Honda', 'Ford', 'Volkswagen', 'Porsche'];
+  const carMogel = ['Model X', 'X5', 'AMG200', 'Kalina', 'Rio', 'Luke', 'Octavia', 'Fit', 'Mustang', 'Polo', '911'];
   const company = carCompany[Math.floor(Math.random() * carCompany.length)];
   const model = carMogel[Math.floor(Math.random() * carMogel.length)];
   return `${company} ${model}`;
@@ -23,7 +23,7 @@ export const generateColor = () => {
 export const carImage = (color: string) => `<?xml version="1.0" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 20010904//EN"
  "http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd">
-<svg version="1.0" xmlns="http://www.w3.org/2000/svg"
+<svg class = "car-svg" version="1.0" xmlns="http://www.w3.org/2000/svg"
  width="1280.000000pt" height="640.000000pt" viewBox="0 0 1280.000000 640.000000"
  preserveAspectRatio="xMidYMid meet" style="
  height: 35px;
