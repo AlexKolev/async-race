@@ -87,7 +87,7 @@ export class Garage {
     }
   };
 
-  delCars = async (id: number) => {
+  static delCars = async (id: number) => {
     try {
       const response: Response = await fetch(`${BASE_URL}${ADD_PATH.garage}/${id}`, { method: 'DELETE' });
       console.log(response.status);
@@ -100,30 +100,30 @@ export class Garage {
     }
   };
 
-  startEngine = async (id: number) => {
+  static startEngine = async (id: number) => {
     try {
       const response: Response = await fetch(`${BASE_URL}${ADD_PATH.engine}?id=${id}&status=started`, { method: 'PATCH' });
       return await response.json();
     } catch (err) {
       // перехватит любую ошибку в блоке try: и в fetch, и в response.json
       console.log((err as Error).message);
-      // return {};
+      return {};
     }
   };
 
-  driveMode = async (id: number) => {
+  static driveMode = async (id: number) => {
     try {
       const response: Response = await fetch(`${BASE_URL}${ADD_PATH.engine}?id=${id}&status=drive`, { method: 'PATCH' });
       return response.status;
     } catch (err) {
       // перехватит любую ошибку в блоке try: и в fetch, и в response.json
       console.log((err as Error).message);
-      // return {};
+      return {};
     }
   };
 
   private carItemClick = (e: Event) => {
-    let target = e.target as Element;
+    const target = e.target as Element;
     // target = target.parentNode as Element;
     // while (!target.classList.contains('car-garage-item')) {
     //   target = target.parentNode as Element;
@@ -142,23 +142,23 @@ export class Garage {
   };
 
   private carItemDelClick = async (e: Event) => {
-    let target = e.target as Element;
+    const target = e.target as Element;
     // target = target.parentNode as Element;
     // while (!target.classList.contains('car-garage-item')) {
     //   target = target.parentNode as Element;
     // }
     const idCar = +(target.getAttribute('data-id') as string);
-    await this.delCars(idCar);
+    await Garage.delCars(idCar);
     const totalcars = document.querySelector('.totalcars-garage') as Element;
     this.totalCars = `${+this.totalCars - 1}`;
     totalcars.innerHTML = `Cars in Garage ${this.totalCars}`;
     this.drawCars(document.querySelector('main') as Element);
   };
 
-  private carStartClick = async (e: Event) => {
+  static carStartClick = async (e: Event) => {
     const target = e.target as Element;
     const idCar = +(target.getAttribute('data-id') as string);
-    const { velocity, distance } = await this.startEngine(idCar);
+    const { velocity, distance } = await Garage.startEngine(idCar);
     console.log({ velocity, distance });
     console.log(distance / velocity);
 
@@ -168,9 +168,9 @@ export class Garage {
     const elemF = document.querySelector(`.wraper-car-svg[data-id="${idCar}"]`) as Element;
     console.log(elemF.getBoundingClientRect());
 
-    const status = await this.driveMode(idCar);
+    const status = await Garage.driveMode(idCar);
     console.log(status);
-  }
+  };
 
   drawCars = async (garageMain: Element) => {
     await this.getCars(this.pageNum, this.limit);
@@ -204,9 +204,9 @@ export class Garage {
       carItem.addEventListener('click', this.carItemDelClick);
     });
 
-    const carStart = document.querySelectorAll('.engine-start');
-    carStart.forEach((carStart) => {
-      carStart.addEventListener('click', this.carStartClick);
+    const carsStart = document.querySelectorAll('.engine-start');
+    carsStart.forEach((carStart) => {
+      carStart.addEventListener('click', Garage.carStartClick);
     });
   };
 
